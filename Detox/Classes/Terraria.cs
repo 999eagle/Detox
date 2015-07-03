@@ -74,13 +74,15 @@ namespace Detox.Classes
             Terraria.MainGraphics = Terraria.GetMainField<GraphicsDeviceManager>("graphics", true);
 
             // Skip the main splash screen if requested..
-            // TODO: Add config option here..
-            Terraria.SetMainField("showSplash", false);
+            if (Configurations.Instance.Current.Graphics.SkipSplash)
+            {
+                Terraria.SetMainField("showSplash", false);
+            }
 
             // Adjust the version strings..
             var version = Terraria.GetMainField<string>("versionNumber");
-            Terraria.SetMainField("versionNumber", string.Format("Detox Client Mod :: by atom0s -- v{0} :: Terraria {1}", Assembly.GetExecutingAssembly().GetName().Version, version));
-            Terraria.SetMainField("versionNumber2", string.Format("Detox Client Mod :: by atom0s -- v{0} :: Terraria {1}", Assembly.GetExecutingAssembly().GetName().Version, version));
+            Terraria.SetMainField("versionNumber", string.Format("Detox Client Mod :: by atom0s :: updated to Terraria 1.3 by 999eagle -- v{0} :: Terraria {1}", Assembly.GetExecutingAssembly().GetName().Version, version));
+            Terraria.SetMainField("versionNumber2", string.Format("Detox Client Mod :: by atom0s :: updated to Terraria 1.3 by 999eagle -- v{0} :: Terraria {1}", Assembly.GetExecutingAssembly().GetName().Version, version));
 
             Logging.Instance.Log("[Detox:Terraria] Terraria.ctor() completed!");
         }
@@ -155,7 +157,7 @@ namespace Detox.Classes
         /// <param name="number3"></param>
         /// <param name="number4"></param>
         /// <param name="number5"></param>
-        public static void SendData(PacketTypes msgType, int remoteClient = -1, int ignoreClient = -1, string text = "", int number = 0, float number2 = 0.0f, float number3 = 0.0f, float number4 = 0.0f, int number5 = 0)
+        public static void SendData(PacketTypes msgType, int remoteClient = -1, int ignoreClient = -1, string text = "", int number = 0, float number2 = 0.0f, float number3 = 0.0f, float number4 = 0.0f, int number5 = 0, int number6 = 0, int number7 = 0)
         {
             // Obtain the Terraria.NetMessage type..
             var netMessage = Detox.Terraria.GetType("Terraria.NetMessage");
@@ -170,7 +172,7 @@ namespace Detox.Classes
             // Invoke the method..
             netSend.Invoke(null, new object[]
                 {
-                    (int)msgType, remoteClient, ignoreClient, text, number, number2, number3, number4, number5
+                    (int)msgType, remoteClient, ignoreClient, text, number, number2, number3, number4, number5, number6, number7
                 });
         }
 

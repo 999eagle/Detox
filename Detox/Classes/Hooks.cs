@@ -72,11 +72,15 @@ namespace Detox.Classes
             Terraria.MainGraphics.ApplyChanges();
 
             // Prepare the UI manager..
-            Detox.GuiManager = new Manager(Terraria.MainGame, Configurations.Instance.Current.Graphics.Skin)
-                {
-                    AutoCreateRenderTarget = true,
-                    SkinDirectory = Path.Combine(Detox.DetoxBasePath, "DetoxContent\\Skins\\")
-                };
+            //Detox.GuiManager = new Manager(Terraria.MainGame, Configurations.Instance.Current.Graphics.Skin)
+            //    {
+            //        AutoCreateRenderTarget = true,
+            //        SkinDirectory = Path.Combine(Detox.DetoxBasePath, "DetoxContent\\Skins\\")
+            //    };
+            //Detox.GuiManager.Initialize();
+            Detox.GuiManager = new Manager(Terraria.MainGame, Terraria.MainGraphics, "Default");
+            Detox.GuiManager.AutoCreateRenderTarget = true;
+            Detox.GuiManager.SkinDirectory = Path.Combine(Detox.DetoxBasePath, "DetoxContent\\Skins\\");
             Detox.GuiManager.Initialize();
 
             // Prepare the console window..

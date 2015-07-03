@@ -21,6 +21,7 @@ namespace DetoxAPI
     using EventArgs;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Content;
+    using System;
     using System.ComponentModel;
 
     /// <summary>
@@ -35,45 +36,53 @@ namespace DetoxAPI
     /// </summary>
     public static class Events
     {
+        public static Action<string, Exception> eventExceptionHandler;
+
+        static void ExceptionHandler(string eventName, Exception e)
+        {
+            if (eventExceptionHandler != null)
+                eventExceptionHandler(eventName, e);
+        }
+
         /// <summary>
         /// Initializes the event objects.
         /// </summary>
         public static void Initialize()
         {
             // Initialize Detox events..
-            Events.DetoxEvents.DetoxInitialize = new EventHandlerCollection<System.EventArgs>("DetoxInitialize");
+            Events.DetoxEvents.DetoxInitialize = new EventHandlerCollection<System.EventArgs>("DetoxInitialize", ExceptionHandler);
 
             // Initialize Xna events..
-            Events.XnaEvents.PreInitialize = new EventHandlerCollection<System.EventArgs>("PreInitialize");
-            Events.XnaEvents.PostInitialize = new EventHandlerCollection<System.EventArgs>("PostInitialize");
-            Events.XnaEvents.PreLoadContent = new EventHandlerCollection<XnaLoadContentEventArgs>("PreLoadContent");
-            Events.XnaEvents.PostLoadContent = new EventHandlerCollection<XnaLoadContentEventArgs>("PostLoadContent");
-            Events.XnaEvents.PreUpdate = new EventHandlerCollection<XnaUpdateEventArgs>("PreUpdate");
-            Events.XnaEvents.PostUpdate = new EventHandlerCollection<XnaUpdateEventArgs>("PostUpdate");
-            Events.XnaEvents.PreDraw = new EventHandlerCollection<XnaDrawEventArgs>("PreDraw");
-            Events.XnaEvents.PostDraw = new EventHandlerCollection<XnaDrawEventArgs>("PosDraw");
+            Events.XnaEvents.PreInitialize = new EventHandlerCollection<System.EventArgs>("PreInitialize", ExceptionHandler);
+            Events.XnaEvents.PostInitialize = new EventHandlerCollection<System.EventArgs>("PostInitialize", ExceptionHandler);
+            Events.XnaEvents.PreLoadContent = new EventHandlerCollection<XnaLoadContentEventArgs>("PreLoadContent", ExceptionHandler);
+            Events.XnaEvents.PostLoadContent = new EventHandlerCollection<XnaLoadContentEventArgs>("PostLoadContent", ExceptionHandler);
+            Events.XnaEvents.PreUpdate = new EventHandlerCollection<XnaUpdateEventArgs>("PreUpdate", ExceptionHandler);
+            Events.XnaEvents.PostUpdate = new EventHandlerCollection<XnaUpdateEventArgs>("PostUpdate", ExceptionHandler);
+            Events.XnaEvents.PreDraw = new EventHandlerCollection<XnaDrawEventArgs>("PreDraw", ExceptionHandler);
+            Events.XnaEvents.PostDraw = new EventHandlerCollection<XnaDrawEventArgs>("PosDraw", ExceptionHandler);
 
             // Initialize Terraria.Main events..
-            Events.TerrariaMainEvents.PreDrawInterface = new EventHandlerCollection<System.EventArgs>("PreDrawInterface");
-            Events.TerrariaMainEvents.PostDrawInterface = new EventHandlerCollection<System.EventArgs>("PostDrawInterface");
+            Events.TerrariaMainEvents.PreDrawInterface = new EventHandlerCollection<System.EventArgs>("PreDrawInterface", ExceptionHandler);
+            Events.TerrariaMainEvents.PostDrawInterface = new EventHandlerCollection<System.EventArgs>("PostDrawInterface", ExceptionHandler);
 
             // Initialize Terraria.Player events..
-            Events.PlayerEvents.PreUpdatePlayer = new EventHandlerCollection<PlayerUpdateEventArgs>("PreUpdatePlayer");
-            Events.PlayerEvents.PostUpdatePlayer = new EventHandlerCollection<PlayerUpdateEventArgs>("PreUpdatePlayer");
-            Events.PlayerEvents.PrePlayerFrame = new EventHandlerCollection<PlayerFrameEventArgs>("PrePlayerFrame");
-            Events.PlayerEvents.PostPlayerFrame = new EventHandlerCollection<PlayerFrameEventArgs>("PostPlayerFrame");
+            Events.PlayerEvents.PreUpdatePlayer = new EventHandlerCollection<PlayerUpdateEventArgs>("PreUpdatePlayer", ExceptionHandler);
+            Events.PlayerEvents.PostUpdatePlayer = new EventHandlerCollection<PlayerUpdateEventArgs>("PreUpdatePlayer", ExceptionHandler);
+            Events.PlayerEvents.PrePlayerFrame = new EventHandlerCollection<PlayerFrameEventArgs>("PrePlayerFrame", ExceptionHandler);
+            Events.PlayerEvents.PostPlayerFrame = new EventHandlerCollection<PlayerFrameEventArgs>("PostPlayerFrame", ExceptionHandler);
 
             // Initialize Terraria.Recipe events..
-            Events.RecipeEvents.PreFindRecipes = new EventHandlerCollection<HandledEventArgs>("PreFindRecipes");
-            Events.RecipeEvents.PostFindRecipes = new EventHandlerCollection<System.EventArgs>("PostFindRecipes");
-            Events.RecipeEvents.PreSetupRecipes = new EventHandlerCollection<HandledEventArgs>("PreSetupRecipes");
-            Events.RecipeEvents.PostSetupRecipes = new EventHandlerCollection<System.EventArgs>("PostSetupRecipes");
+            Events.RecipeEvents.PreFindRecipes = new EventHandlerCollection<HandledEventArgs>("PreFindRecipes", ExceptionHandler);
+            Events.RecipeEvents.PostFindRecipes = new EventHandlerCollection<System.EventArgs>("PostFindRecipes", ExceptionHandler);
+            Events.RecipeEvents.PreSetupRecipes = new EventHandlerCollection<HandledEventArgs>("PreSetupRecipes", ExceptionHandler);
+            Events.RecipeEvents.PostSetupRecipes = new EventHandlerCollection<System.EventArgs>("PostSetupRecipes", ExceptionHandler);
 
             // Initialize Terraria.Lighting events..
-            Events.LightingEvents.Brightness = new EventHandlerCollection<LightingBrightnessEventArgs>("PreFindRecipes");
-            Events.LightingEvents.LightColor = new EventHandlerCollection<HandledEventArgs>("LightColor");
-            Events.LightingEvents.GetColor1 = new EventHandlerCollection<GetColorEventArgs>("GetColor1");
-            Events.LightingEvents.GetColor2 = new EventHandlerCollection<GetColorEventArgs>("GetColor2");
+            Events.LightingEvents.Brightness = new EventHandlerCollection<LightingBrightnessEventArgs>("PreFindRecipes", ExceptionHandler);
+            Events.LightingEvents.LightColor = new EventHandlerCollection<HandledEventArgs>("LightColor", ExceptionHandler);
+            Events.LightingEvents.GetColor1 = new EventHandlerCollection<GetColorEventArgs>("GetColor1", ExceptionHandler);
+            Events.LightingEvents.GetColor2 = new EventHandlerCollection<GetColorEventArgs>("GetColor2", ExceptionHandler);
         }
 
         /// <summary>

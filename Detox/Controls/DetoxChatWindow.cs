@@ -282,7 +282,7 @@ namespace Detox.Controls
         private void ChatInput_OnKeyDown(object sender, KeyEventArgs e)
         {
             // Play the chat click sound..
-            var playSound = Detox.Terraria.GetType("Terraria.Main").GetMethod("PlaySound");
+            var playSound = Detox.Terraria.GetType("Terraria.Main").GetMethod("PlaySound", new[] { typeof(int), typeof(int), typeof(int), typeof(int) });
             if (playSound != null)
                 playSound.Invoke(null, new object[] { 12, -1, -1, 1 });
 

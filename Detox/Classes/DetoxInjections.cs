@@ -157,7 +157,7 @@ namespace Detox.Classes
             //
             // Terraria.Player.UpdatePlayer
             //
-            var updatePlayer = asm.GetMethod("Player", "UpdatePlayer");
+            var updatePlayer = asm.GetMethod("Player", "Update");
             updatePlayer.InsertStart(
                 Instruction.Create(OpCodes.Ldarg_0),
                 Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.PlayerEvents).GetMethod("InvokePreUpdatePlayer", Detox.BindFlags))));
@@ -168,12 +168,12 @@ namespace Detox.Classes
             // Terraria.Player.PlayerFrame
             //
             var playerFrame = asm.GetMethod("Player", "PlayerFrame");
-            playerFrame.InsertStart(
-                Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.PlayerEvents).GetMethod("InvokePrePlayerFrame", Detox.BindFlags))));
-            playerFrame.InsertEnd(
-                Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.PlayerEvents).GetMethod("InvokePostPlayerFrame", Detox.BindFlags))));
+            //playerFrame.InsertStart(
+            //    Instruction.Create(OpCodes.Ldarg_0),
+            //    Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.PlayerEvents).GetMethod("InvokePrePlayerFrame", Detox.BindFlags))));
+            //playerFrame.InsertEnd(
+            //    Instruction.Create(OpCodes.Ldarg_0),
+            //    Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.PlayerEvents).GetMethod("InvokePostPlayerFrame", Detox.BindFlags))));
         }
 
         /// <summary>
@@ -232,13 +232,14 @@ namespace Detox.Classes
             //
             // Terraria.Lighting.LightColor
             //
-            var lightColor = asm.GetMethod("Lighting", "LightColor");
-            lightColor.InsertStart(
-                Instruction.Create(OpCodes.Ldarg_0),
-                Instruction.Create(OpCodes.Ldarg_1),
-                Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.LightingEvents).GetMethod("InvokeLightColor", Detox.BindFlags))),
-                Instruction.Create(OpCodes.Brfalse_S, lightColor.Body.Instructions[0]),
-                Instruction.Create(OpCodes.Ret));
+            //var lightColor = asm.GetMethod("Lighting", "LightColor");
+            //lightColor.InsertStart(
+            //    Instruction.Create(OpCodes.Ldarg_0),
+            //    Instruction.Create(OpCodes.Ldarg_1),
+            //    Instruction.Create(OpCodes.Call, mod.Import(typeof(Events.LightingEvents).GetMethod("InvokeLightColor", Detox.BindFlags))),
+            //    Instruction.Create(OpCodes.Brfalse_S, lightColor.Body.Instructions[0]),
+            //    Instruction.Create(OpCodes.Ret));
+
             //
             // Terraria.Lighting.GetColor
             //

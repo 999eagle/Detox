@@ -72,7 +72,7 @@ namespace Detox.Classes
             get
             {
                 var players = Terraria.GetMainField<dynamic[]>("player");
-                return new DetoxObject(players.FirstOrDefault(p => p.whoAmi == DetoxPlayers.LocalPlayerIndex), "Player");
+                return new DetoxObject(players.FirstOrDefault(p => p.whoAmI == DetoxPlayers.LocalPlayerIndex), "Player");
             }
         }
     }

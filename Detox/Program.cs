@@ -54,18 +54,24 @@ namespace Detox
             try
             {
                 // See if we have Terraria in the same folder..
-                if (!File.Exists("Terraria.exe"))
+                if (File.Exists("Terraria.exe"))
+                {
+                    // Load Terraria..
+                    Detox.TerrariaBasePath = AppDomain.CurrentDomain.BaseDirectory;
+                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly("Terraria.exe");
+                }
+                else if (File.Exists("Terraria\\Terraria.exe"))
+                {
+                    // Load Terraria..
+                    Detox.TerrariaBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Terraria");
+                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly("Terraria\\Terraria.exe");
+                }
+                else
                 {
                     // Attempt to obtain Terraria's path from the registry..
                     var path = Program.GetValue<string>("HKEY_LOCAL_MACHINE\\SOFTWARE\\Re-Logic\\Terraria", "Install_Path");
                     Detox.TerrariaBasePath = path;
                     Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly(Path.Combine(path, "Terraria.exe"));
-                }
-                else
-                {
-                    // Load Terraria..
-                    Detox.TerrariaBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly("Terraria.exe");
                 }
             }
             catch
@@ -94,6 +100,7 @@ namespace Detox
             // Prepare and apply hooks..
             Logging.Instance.Log("[Detox] Registering internal hooks..");
             Events.Initialize();
+            Events.eventExceptionHandler = EventExceptionHandler;
             Events.XnaEvents.PreInitialize.Register(null, Hooks.OnXnaPreInitialize, 0);
             Events.XnaEvents.PostInitialize.Register(null, Hooks.OnXnaPostInitialize, 0);
             Events.XnaEvents.PostLoadContent.Register(null, Hooks.OnXnaPostLoadContent, 0);
@@ -175,6 +182,12 @@ namespace Detox
             Logging.Instance.Log("[Detox] Configuration file saved!");
 
             Logging.Instance.Log("[Detox] Detox exited at: " + DateTime.Now);
+        }
+
+        private static void EventExceptionHandler(string eventName, Exception e)
+        {
+            Logging.Instance.Log("[Detox:Events] Encountered an error in Terraria event \"" + eventName + "\":");
+            Logging.Instance.Log(e.ToString());
         }
 
         /// <summary>

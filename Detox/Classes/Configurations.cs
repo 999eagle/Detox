@@ -98,6 +98,12 @@ namespace Detox.Classes
         /// </summary>
         [ConfigurationInformation("Skin", "Sets the skin file to load for the Detox UI.")]
         public string Skin = "Terraria";
+
+        /// <summary>
+        /// Gets or sets if Detox should skip the Terraria splash screen.
+        /// </summary>
+        [ConfigurationInformation("SkipSplash", "Sets if Detox should skip the Terraria splash screen")]
+        public bool SkipSplash = false;
     }
 
     /// <summary>

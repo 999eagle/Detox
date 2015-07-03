@@ -34,7 +34,22 @@ namespace DetoxAPI.Extensions
         /// <returns></returns>
         public static FieldDefinition GetField(this AssemblyDefinition asm, string parentType, string name)
         {
-            return asm.MainModule.Types.First(t => t.Name == parentType).Fields.First(f => f.Name == name);
+            var tdef = asm.MainModule.Types.First(t => t.Name == parentType);
+            FieldDefinition f;
+            do
+            {
+                f = tdef.GetField(name);
+                tdef = tdef.BaseType.Resolve();
+            } while (f == null && tdef.FullName != "System.Object");
+
+            if (f != null)
+                return f;
+            throw new Exception("Field not found!");
+        }
+
+        private static FieldDefinition GetField(this TypeDefinition tdef, string name)
+        {
+            return tdef.Fields.FirstOrDefault(f => f.Name == name);
         }
 
         /// <summary>

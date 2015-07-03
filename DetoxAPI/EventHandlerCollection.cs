@@ -31,6 +31,8 @@ namespace DetoxAPI
         /// </summary>
         private List<EventHandlerRegistration<ArgumentsType>> _registrations;
 
+        private Action<string, Exception> exceptionHandler;
+
         /// <summary>
         /// Lockable object to prevent threading issues.
         /// </summary>
@@ -40,10 +42,17 @@ namespace DetoxAPI
         /// Default Constructor
         /// </summary>
         /// <param name="name"></param>
-        internal EventHandlerCollection(string name)
+        internal EventHandlerCollection(string name) : this(name, null) { }
+        internal EventHandlerCollection(string name, Action<string, Exception> exceptionHandler)
         {
             this._registrations = new List<EventHandlerRegistration<ArgumentsType>>();
             this.EventName = name;
+            this.exceptionHandler = exceptionHandler;
+        }
+
+        public void SetExceptionHandler(Action<string, Exception> handler)
+        {
+            this.exceptionHandler = handler;
         }
 
         /// <summary>
@@ -139,8 +148,12 @@ namespace DetoxAPI
                 {
                     r.Handler(args);
                 }
-                catch
+                catch (Exception x)
                 {
+                    if(exceptionHandler != null)
+                    {
+                        exceptionHandler(EventName, x);
+                    }
                 }
             }
         }
