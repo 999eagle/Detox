@@ -98,10 +98,6 @@
       <Name>Controls</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\NeoforceControls\Skins\Skins.csproj">
-      <Project>{08359de3-f4bf-4298-859c-88a153495d35}</Project>
-      <Name>Skins</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
