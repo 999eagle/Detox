@@ -80,7 +80,6 @@ namespace DetoxAPI
 
             // Initialize Terraria.Lighting events..
             Events.LightingEvents.Brightness = new EventHandlerCollection<LightingBrightnessEventArgs>("PreFindRecipes", ExceptionHandler);
-            Events.LightingEvents.LightColor = new EventHandlerCollection<HandledEventArgs>("LightColor", ExceptionHandler);
             Events.LightingEvents.GetColor1 = new EventHandlerCollection<GetColorEventArgs>("GetColor1", ExceptionHandler);
             Events.LightingEvents.GetColor2 = new EventHandlerCollection<GetColorEventArgs>("GetColor2", ExceptionHandler);
         }
@@ -440,19 +439,6 @@ namespace DetoxAPI
             }
 
             /// <summary>
-            /// Invokes the Lighting LightColor event.
-            /// </summary>
-            /// <param name="x"></param>
-            /// <param name="y"></param>
-            /// <returns></returns>
-            public static bool InvokeLightColor(int x, int y)
-            {
-                var args = new HandledEventArgs(false);
-                LightColor.Invoke(args);
-                return args.Handled;
-            }
-
-            /// <summary>
             /// Invokes the Lighting GetColor event.
             /// </summary>
             /// <param name="x"></param>
@@ -505,6 +491,7 @@ namespace DetoxAPI
             /// <summary>
             /// Gets the event handler collection for the Lighting LightColor event.
             /// </summary>
+            [Obsolete("Lighting.LightColor doesn't exist anymore.", true)]
             public static EventHandlerCollection<HandledEventArgs> LightColor { get; internal set; }
 
             /// <summary>
