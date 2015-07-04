@@ -182,7 +182,12 @@ namespace Detox.Classes
             // Delete the original Terraria mouse texture..
             var cursorTexture = new Texture2D(Terraria.MainGame.GraphicsDevice, 1, 1);
             cursorTexture.SetData(new[] { Color.Transparent });
-            Terraria.SetMainField("cursorTexture", cursorTexture);
+            var cursorTextures = Terraria.GetMainField<Texture2D[]>("cursorTextures");
+            for (int i = 0; i < cursorTextures.Length; i++)
+            {
+                cursorTextures[i] = cursorTexture;
+            }
+            Terraria.SetMainField("cursorTextures", cursorTextures);
 
             Logging.Instance.Log("[Detox:Xna] OnXnaPostLoadContent completed!");
         }
@@ -231,6 +236,7 @@ namespace Detox.Classes
             // Clear the chat text and mode..
             Terraria.SetMainField("chatText", string.Empty);
             Terraria.SetMainField("chatMode", false);
+            Terraria.SetMainField("chatRelease", false);
 
             // Update the UI manager..
             Detox.GuiManager.PostUpdate(e.GameTime);

@@ -50,8 +50,10 @@ namespace Detox.Classes
         /// <param name="bUseGameInstance"></param>
         public static void SetMainField<T>(string name, T value, bool bUseGameInstance = false)
         {
+            var type = Detox.Terraria.GetType("Terraria.Main");
+            var allFields = type.GetFields(Detox.BindFlags);//.OrderBy(f => f.Name);
             // Attempt to locate the field..
-            var field = Detox.Terraria.GetType("Terraria.Main").GetFields(Detox.BindFlags).FirstOrDefault(f => f.Name == name);
+            var field = allFields.FirstOrDefault(f => f.Name == name);
             if (field == null)
                 return;
 

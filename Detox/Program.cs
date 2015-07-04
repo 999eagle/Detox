@@ -93,8 +93,8 @@ namespace Detox
             // Initialize Steam if requested..
             if (Configurations.Instance.Current.Steam.InitializeSteam)
             {
-                Logging.Instance.Log("[Steam] Initializing Steam due to configuration option.");
-                Steam.Initialize();
+                //Logging.Instance.Log("[Steam] Initializing Steam due to configuration option.");
+                //Steam.Initialize();
             }
 
             // Prepare and apply hooks..
@@ -155,6 +155,34 @@ namespace Detox
 
                     // Attempt to invoke the constructor..
                     var ctor = ctorInfo.Invoke(null);
+
+                    if (Configurations.Instance.Current.Steam.InitializeSteam)
+                    {
+                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI in Steam mode...");
+                    }
+                    else
+                    {
+                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI...");
+                    }
+
+                    var socialModeEnum = Detox.Terraria.GetType("Terraria.Social.SocialMode");
+                    FieldInfo socialModeInfo;
+                    if (Configurations.Instance.Current.Steam.InitializeSteam)
+                    {
+                        socialModeInfo = socialModeEnum.GetField("Steam");
+                    }
+                    else
+                    {
+                        socialModeInfo = socialModeEnum.GetField("None");
+                    }
+                    var socialMode = socialModeInfo.GetValue(null);
+                    Detox.Terraria.GetType("Terraria.Social.SocialAPI").GetMethod("Initialize").Invoke(null, new object[]
+                        {
+                            socialMode
+                        });
+
+                    Logging.Instance.Log("[Detox] Terraria SocialAPI initialized.");
+
                     var run = mainType.GetMethod("Run", Detox.BindFlags);
                     if (run == null)
                         throw new InvalidOperationException();
@@ -220,7 +248,20 @@ namespace Detox
             try
             {
                 var asmPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DetoxLibs", e.Name.Split(',')[0] + ".dll");
-                return File.Exists(asmPath) ? Assembly.Load(File.ReadAllBytes(asmPath)) : null;
+                var asm = File.Exists(asmPath) ? Assembly.Load(File.ReadAllBytes(asmPath)) : null;
+                if (asm != null)
+                    return asm;
+
+                string resourceName = new AssemblyName(e.Name).Name + ".dll";
+                string name = Array.Find(Detox.Terraria.GetManifestResourceNames(), element => element.EndsWith(resourceName));
+                using (var resourceStream = Detox.Terraria.GetManifestResourceStream(name))
+                {
+                    byte[] buf = new byte[resourceStream.Length];
+                    resourceStream.Read(buf, 0, buf.Length);
+                    asm = Assembly.Load(buf);
+                }
+
+                return asm;
             }
             catch
             {

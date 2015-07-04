@@ -29,6 +29,37 @@ namespace Detox.Classes
     public static class DetoxInjections
     {
         /// <summary>
+        /// Injection method to apply detours to Terria Steam integration
+        /// </summary>
+        [Injection("SteamInjection", "Creates detours to enable Steam integration")]
+        public static void SteamInjection(AssemblyDefinition asm)
+        {
+            Environment.SetEnvironmentVariable("SteamAppId", "105600");
+            var mod = asm.MainModule;
+            var initSteam = asm.GetMethod("CoreSocialModule", "Initialize");
+            //Jump over SteamAPI::RestartAppIfNecessary
+            Instruction steamInitInstr = null;
+            for (int i = 0; i < initSteam.Body.Instructions.Count; i++)
+            {
+                var instr = initSteam.Body.Instructions[i];
+                if (instr.OpCode == OpCodes.Call)
+                {
+                    var target = (MethodReference)instr.Operand;
+                    if (target.Name == "Init" && target.DeclaringType.FullName == "Steamworks.SteamAPI")
+                    {
+                        steamInitInstr = instr;
+                        break;
+                    }
+                }
+            }
+            if (steamInitInstr != null)
+            {
+                initSteam.InsertStart(
+                    Instruction.Create(OpCodes.Br, steamInitInstr));
+            }
+        }
+
+        /// <summary>
         /// Injection method to apply hooks for Terraria events.
         /// </summary>
         [Injection("TerrariaInjection", "Creates hooks to fire Terraria events.")]
