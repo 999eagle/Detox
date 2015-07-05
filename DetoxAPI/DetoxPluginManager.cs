@@ -44,6 +44,39 @@ namespace DetoxAPI
             _plugins = new List<DetoxPluginContainer>();
         }
 
+        public static DetoxPluginErrorReason.ErrorTypes PluginExists(string name)
+        {
+            // Append .dll to name if needed..
+            var pluginName = name;
+            if (!name.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
+                pluginName += ".dll";
+
+            // Ensure the plugin file exists..
+            if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DetoxLibs\\", pluginName)))
+                return DetoxPluginErrorReason.ErrorTypes.FileNotFound;
+
+            // Load the assembly..
+            var pluginPath = AppDomain.CurrentDomain.BaseDirectory + "DetoxLibs\\" + pluginName;
+            var assembly = Assembly.Load(File.ReadAllBytes(pluginPath));
+
+            // Locate the plugin type..
+            var pluginBase = assembly.GetTypes().SingleOrDefault(t => t.BaseType == typeof(DetoxPlugin));
+            if (pluginBase == null)
+                return DetoxPluginErrorReason.ErrorTypes.FileNotPlugin;
+
+            // Locate the interface version.
+            var pluginInterface = pluginBase.GetCustomAttributes(typeof(DetoxApiVersionAttribute), false);
+            if (pluginInterface.Length == 0)
+                return DetoxPluginErrorReason.ErrorTypes.FileMissingAttribute;
+
+            // Ensure the version is valid..
+            var interfaceVersion = (DetoxApiVersionAttribute)pluginInterface[0];
+            if (interfaceVersion.Version != DetoxPluginManager.DetoxAPIVersion)
+                return DetoxPluginErrorReason.ErrorTypes.InvalidApiVersion;
+
+            return DetoxPluginErrorReason.ErrorTypes.Success;
+        }
+
         /// <summary>
         /// Loads the given plugin.
         /// </summary>

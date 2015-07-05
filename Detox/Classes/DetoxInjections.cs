@@ -34,7 +34,6 @@ namespace Detox.Classes
         [Injection("SteamInjection", "Creates detours to enable Steam integration")]
         public static void SteamInjection(AssemblyDefinition asm)
         {
-            Environment.SetEnvironmentVariable("SteamAppId", "105600");
             var mod = asm.MainModule;
             var initSteam = asm.GetMethod("CoreSocialModule", "Initialize");
             //Jump over SteamAPI::RestartAppIfNecessary

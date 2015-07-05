@@ -27,6 +27,7 @@ namespace Detox
     using System.Linq;
     using System.Reflection;
     using System.Windows.Forms;
+    using System.Diagnostics;
 
     internal class Program
     {
@@ -44,8 +45,14 @@ namespace Detox
         /// Main application entry point.
         /// </summary>
         [STAThread]
-        private static void Main()
+        private static void Main(string[] args)
         {
+            Arguments.Init(args);
+            if (!Arguments.HasArgument("noconfig"))
+            {
+                Process.Start("DetoxConfig.exe");
+                return;
+            }
             // Store the base path to Detox..
             Detox.DetoxBasePath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -54,25 +61,39 @@ namespace Detox
             try
             {
                 // See if we have Terraria in the same folder..
+                string terrariaPath;
+                AssemblyDefinition terrariaAsm = null;
                 if (File.Exists("Terraria.exe"))
                 {
                     // Load Terraria..
-                    Detox.TerrariaBasePath = AppDomain.CurrentDomain.BaseDirectory;
-                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly("Terraria.exe");
+                    terrariaPath = AppDomain.CurrentDomain.BaseDirectory;
                 }
                 else if (File.Exists("Terraria\\Terraria.exe"))
                 {
                     // Load Terraria..
-                    Detox.TerrariaBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Terraria");
-                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly("Terraria\\Terraria.exe");
+                    terrariaPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Terraria");
                 }
                 else
                 {
                     // Attempt to obtain Terraria's path from the registry..
-                    var path = Program.GetValue<string>("HKEY_LOCAL_MACHINE\\SOFTWARE\\Re-Logic\\Terraria", "Install_Path");
-                    Detox.TerrariaBasePath = path;
-                    Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly(Path.Combine(path, "Terraria.exe"));
+                    terrariaPath = Program.GetValue<string>("HKEY_LOCAL_MACHINE\\SOFTWARE\\Re-Logic\\Terraria", "Install_Path");
                 }
+                //See if custom path was specified as argument
+                if (Arguments.HasArgument("terrariaPath"))
+                {
+                    terrariaPath = Arguments.GetArgument("terrariaPath");
+                    //See if given path is a file
+                    if (File.Exists(terrariaPath))
+                    {
+                        //Load AssemblyDefinition here to not use Terraria.exe
+                        terrariaAsm = AssemblyDefinition.ReadAssembly(terrariaPath);
+                        terrariaPath = Path.GetDirectoryName(terrariaPath);
+                    }
+                }
+                Detox.TerrariaBasePath = terrariaPath;
+                if(terrariaAsm == null)
+                    terrariaAsm = AssemblyDefinition.ReadAssembly(Path.Combine(Detox.TerrariaBasePath, "Terraria.exe"));
+                Detox.TerrariaAsm = terrariaAsm;
             }
             catch
             {
@@ -89,13 +110,6 @@ namespace Detox
             Logging.Instance.Log("[Detox] Loading configuration file..");
             Configurations.Instance.LoadConfig(AppDomain.CurrentDomain.BaseDirectory + "\\detox.config.json");
             Logging.Instance.Log("[Detox] Configuration file loaded!");
-
-            // Initialize Steam if requested..
-            if (Configurations.Instance.Current.Steam.InitializeSteam)
-            {
-                //Logging.Instance.Log("[Steam] Initializing Steam due to configuration option.");
-                //Steam.Initialize();
-            }
 
             // Prepare and apply hooks..
             Logging.Instance.Log("[Detox] Registering internal hooks..");
@@ -156,25 +170,21 @@ namespace Detox
                     // Attempt to invoke the constructor..
                     var ctor = ctorInfo.Invoke(null);
 
-                    if (Configurations.Instance.Current.Steam.InitializeSteam)
-                    {
-                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI in Steam mode...");
-                    }
-                    else
-                    {
-                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI...");
-                    }
-
                     var socialModeEnum = Detox.Terraria.GetType("Terraria.Social.SocialMode");
                     FieldInfo socialModeInfo;
                     if (Configurations.Instance.Current.Steam.InitializeSteam)
                     {
+                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI in Steam mode...");
+                        Environment.SetEnvironmentVariable("SteamAppId", "105600");
+                        Environment.SetEnvironmentVariable("SteamGameId", "105600");
                         socialModeInfo = socialModeEnum.GetField("Steam");
                     }
                     else
                     {
+                        Logging.Instance.Log("[Detox] Initializing Terraria SocialAPI...");
                         socialModeInfo = socialModeEnum.GetField("None");
                     }
+
                     var socialMode = socialModeInfo.GetValue(null);
                     Detox.Terraria.GetType("Terraria.Social.SocialAPI").GetMethod("Initialize").Invoke(null, new object[]
                         {
@@ -195,13 +205,6 @@ namespace Detox
             {
                 Logging.Instance.Log("[Detox] Encountered an error while starting / running Terraria:");
                 Logging.Instance.Log(e.ToString());
-            }
-
-            // Deinitialize Steam if requested..
-            if (Configurations.Instance.Current.Steam.InitializeSteam)
-            {
-                Logging.Instance.Log("[Steam] Shutting down Steam due to configuration option.");
-                Steam.Shutdown();
             }
 
             // Save the configuration file..
