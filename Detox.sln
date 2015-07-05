@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetoxAPI", "DetoxAPI\DetoxA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controls", "NeoforceControls\Controls\Controls.csproj", "{9C8328B3-97FC-4F39-A1BC-6DC4A1730C26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DetoxConfig", "DetoxConfig\DetoxConfig.csproj", "{42F1F733-9547-4BA4-B989-1A2DF9F84030}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,20 +65,6 @@ Global
 		{9C8328B3-97FC-4F39-A1BC-6DC4A1730C26}.Release|x86.Build.0 = Release|x86
 		{9C8328B3-97FC-4F39-A1BC-6DC4A1730C26}.Release|Xbox 360.ActiveCfg = Release|x86
 		{9C8328B3-97FC-4F39-A1BC-6DC4A1730C26}.Release|Zune.ActiveCfg = Release|x86
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Debug|Zune.ActiveCfg = Debug|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|x86.ActiveCfg = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Xbox 360.ActiveCfg = Release|Any CPU
-		{42F1F733-9547-4BA4-B989-1A2DF9F84030}.Release|Zune.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

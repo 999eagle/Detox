@@ -46,13 +46,17 @@ namespace Detox.Classes
             Terraria.MainGame.Window.ClientSizeChanged += (sender, args) =>
                 {
                     // Resize the graphics device to the window size..
-                    Terraria.MainGraphics.PreferredBackBufferWidth = Terraria.MainGame.Window.ClientBounds.Width;
-                    Terraria.MainGraphics.PreferredBackBufferHeight = Terraria.MainGame.Window.ClientBounds.Height;
-                    Terraria.MainGraphics.ApplyChanges();
+                    // Do not resize when window is minimized (size will be set to 0)
+                    if (Terraria.MainGame.Window.ClientBounds.Width > 0 && Terraria.MainGame.Window.ClientBounds.Height > 0)
+                    {
+                        Terraria.MainGraphics.PreferredBackBufferWidth = Terraria.MainGame.Window.ClientBounds.Width;
+                        Terraria.MainGraphics.PreferredBackBufferHeight = Terraria.MainGame.Window.ClientBounds.Height;
+                        Terraria.MainGraphics.ApplyChanges();
 
-                    // Recreate the UI render target..
-                    if (Detox.GuiManager != null)
-                        Detox.GuiManager.RenderTarget = null;
+                        // Recreate the UI render target..
+                        if (Detox.GuiManager != null)
+                            Detox.GuiManager.RenderTarget = null;
+                    }
                 };
 
             Logging.Instance.Log("[Detox:Xna] OnXnaPreInitialize completed!");

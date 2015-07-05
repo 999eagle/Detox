@@ -214,5 +214,11 @@ namespace Detox.Classes
             get { return _plugins ?? (_plugins = new DetoxPluginConfigurations()); }
             set { _plugins = value; }
         }
+
+        /// <summary>
+        /// Gets or sets if Detox should launch the configuration window.
+        /// </summary>
+        [ConfigurationInformation("SkipConfig", "Sets if Detox should launch the configuration window")]
+        public bool SkipConfig = false;
     }
 }

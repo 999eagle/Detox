@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,17 +10,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Detox.Classes;
 
-namespace DetoxConfig
+namespace Detox
 {
-    public partial class frmMain : Form
+    public partial class frmConfig : Form
     {
-        static string configFilePath = "detox.config.json";
-
-        public frmMain()
+        public frmConfig()
         {
             InitializeComponent();
-            Configurations.Instance.LoadConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFilePath));
+            Logging.Instance.Log("[Detox:Config] Loading configuration");
+            Configurations.Instance.LoadConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detox.config.json"));
             var config = Configurations.Instance.Current;
+            chkSkipConfig.Checked = config.SkipConfig;
             chkCustomBackground.Checked = config.CustomObjects.UseCustomBackgrounds;
             chkCustomFonts.Checked = config.CustomObjects.UseCustomFonts;
             chkCustomIcons.Checked = config.CustomObjects.UseCustomHpMpIcons;
@@ -51,7 +50,7 @@ namespace DetoxConfig
             {
                 cmbResolution.SelectedIndex = res.IndexOf(configRes);
             }
-
+            Logging.Instance.Log("[Detox:Config] Loaded configuration");
         }
 
         private List<string> GetAvailableSkins()
@@ -109,6 +108,7 @@ namespace DetoxConfig
 
         private void SaveConfig()
         {
+            Logging.Instance.Log("[Detox:Config] Saving configuration");
             var config = Configurations.Instance.Current;
             config.CustomObjects.UseCustomBackgrounds = chkCustomBackground.Checked;
             config.CustomObjects.UseCustomFonts = chkCustomFonts.Checked;
@@ -119,14 +119,16 @@ namespace DetoxConfig
             config.Graphics.StartupWindowHeight = Int32.Parse(res.Substring(res.IndexOf('x') + 1));
             config.Graphics.StartupWindowWidth = Int32.Parse(res.Substring(0, res.IndexOf('x')));
             config.Plugins.AutoLoadPlugins = chkAutoloadPlugins.CheckedItems.Cast<string>().ToList();
+            config.SkipConfig = chkSkipConfig.Checked;
             config.Steam.InitializeSteam = chkInitSteam.Checked;
-            Configurations.Instance.SaveConfig(configFilePath);
+            Configurations.Instance.SaveConfig("detox.config.json");
+            Logging.Instance.Log("[Detox:Config] Saved configuration");
         }
 
         private void btnSaveRun_Click(object sender, EventArgs e)
         {
             SaveConfig();
-            Program.StartDetox();
+            Program.RunDetox = true;
             this.Close();
         }
     }

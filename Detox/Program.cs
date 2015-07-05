@@ -31,6 +31,9 @@ namespace Detox
 
     internal class Program
     {
+        //Set to true by the configuration window to indicate that Terraria should be launched
+        public static bool RunDetox = false;
+
         /// <summary>
         /// Default Constructor
         /// </summary>
@@ -47,22 +50,31 @@ namespace Detox
         [STAThread]
         private static void Main(string[] args)
         {
-            Arguments.Init(args);
-            if (!Arguments.HasArgument("noconfig"))
-            {
-                Process.Start("DetoxConfig.exe");
-                return;
-            }
             // Store the base path to Detox..
             Detox.DetoxBasePath = AppDomain.CurrentDomain.BaseDirectory;
 
             Logging.Instance.Log("[Detox] Detox started at: " + DateTime.Now);
 
+            Logging.Instance.Log("[Detox:Config] Showing configuration window");
+
+            Configurations.Instance.LoadConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detox.config.json"));
+            if (!Configurations.Instance.Current.SkipConfig)
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(true);
+                Application.Run(new frmConfig());
+
+                if (!RunDetox)
+                {
+                    Logging.Instance.Log("[Detox:Config] Detox exited after configuration at: " + DateTime.Now);
+                    return;
+                }
+            }
+
             try
             {
                 // See if we have Terraria in the same folder..
                 string terrariaPath;
-                AssemblyDefinition terrariaAsm = null;
                 if (File.Exists("Terraria.exe"))
                 {
                     // Load Terraria..
@@ -78,22 +90,8 @@ namespace Detox
                     // Attempt to obtain Terraria's path from the registry..
                     terrariaPath = Program.GetValue<string>("HKEY_LOCAL_MACHINE\\SOFTWARE\\Re-Logic\\Terraria", "Install_Path");
                 }
-                //See if custom path was specified as argument
-                if (Arguments.HasArgument("terrariaPath"))
-                {
-                    terrariaPath = Arguments.GetArgument("terrariaPath");
-                    //See if given path is a file
-                    if (File.Exists(terrariaPath))
-                    {
-                        //Load AssemblyDefinition here to not use Terraria.exe
-                        terrariaAsm = AssemblyDefinition.ReadAssembly(terrariaPath);
-                        terrariaPath = Path.GetDirectoryName(terrariaPath);
-                    }
-                }
                 Detox.TerrariaBasePath = terrariaPath;
-                if(terrariaAsm == null)
-                    terrariaAsm = AssemblyDefinition.ReadAssembly(Path.Combine(Detox.TerrariaBasePath, "Terraria.exe"));
-                Detox.TerrariaAsm = terrariaAsm;
+                Detox.TerrariaAsm = AssemblyDefinition.ReadAssembly(Path.Combine(Detox.TerrariaBasePath, "Terraria.exe"));
             }
             catch
             {
