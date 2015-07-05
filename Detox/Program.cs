@@ -61,7 +61,7 @@ namespace Detox
             if (!Configurations.Instance.Current.SkipConfig)
             {
                 Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(true);
+                Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new frmConfig());
 
                 if (!RunDetox)
