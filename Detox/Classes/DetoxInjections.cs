@@ -37,24 +37,22 @@ namespace Detox.Classes
             var mod = asm.MainModule;
             var initSteam = asm.GetMethod("CoreSocialModule", "Initialize");
             //Jump over SteamAPI::RestartAppIfNecessary
-            Instruction steamInitInstr = null;
-            for (int i = 0; i < initSteam.Body.Instructions.Count; i++)
+            Instruction jumpStartInstr = null, jumpTargetInstr = null;
+            int offset = -1;
+            do
             {
-                var instr = initSteam.Body.Instructions[i];
-                if (instr.OpCode == OpCodes.Call)
+                offset = initSteam.ScanForPattern(offset + 1, OpCodes.Ldc_I4, OpCodes.Newobj, OpCodes.Call, OpCodes.Brfalse_S);
+                if((int)initSteam.Body.Instructions[offset].Operand == 105600 &&
+                    (initSteam.Body.Instructions[offset + 2].Operand as MethodReference).Name == "RestartAppIfNecessary")
                 {
-                    var target = (MethodReference)instr.Operand;
-                    if (target.Name == "Init" && target.DeclaringType.FullName == "Steamworks.SteamAPI")
-                    {
-                        steamInitInstr = instr;
-                        break;
-                    }
+                    jumpStartInstr = initSteam.Body.Instructions[offset];
+                    jumpTargetInstr = (Instruction)initSteam.Body.Instructions[offset + 3].Operand;
                 }
-            }
-            if (steamInitInstr != null)
+            } while (jumpStartInstr == null && offset >= 0);
+            if (jumpStartInstr != null)
             {
-                initSteam.InsertStart(
-                    Instruction.Create(OpCodes.Br, steamInitInstr));
+                initSteam.Insert(InsertLocation.Start, jumpStartInstr,
+                    Instruction.Create(OpCodes.Br_S, jumpTargetInstr));
             }
         }
 

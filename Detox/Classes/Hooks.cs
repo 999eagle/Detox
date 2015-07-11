@@ -41,6 +41,11 @@ namespace Detox.Classes
             // Set the content base path..
             Terraria.MainGame.Content.RootDirectory = Path.Combine(Detox.TerrariaBasePath, "Content");
 
+            // Adjust the game resolution per-configurations..
+            Terraria.MainGraphics.PreferredBackBufferWidth = Configurations.Instance.Current.Graphics.StartupWindowWidth;
+            Terraria.MainGraphics.PreferredBackBufferHeight = Configurations.Instance.Current.Graphics.StartupWindowHeight;
+            Terraria.MainGraphics.ApplyChanges();
+
             // Attach resizing event to fix UI manager..
             Terraria.MainGame.Window.AllowUserResizing = true;
             Terraria.MainGame.Window.ClientSizeChanged += (sender, args) =>
@@ -69,11 +74,6 @@ namespace Detox.Classes
         public static void OnXnaPostInitialize(System.EventArgs e)
         {
             Logging.Instance.Log("[Detox:Xna] OnXnaPostInitialize was called!");
-
-            // Adjust the game resolution per-configurations..
-            Terraria.MainGraphics.PreferredBackBufferWidth = Configurations.Instance.Current.Graphics.StartupWindowWidth;
-            Terraria.MainGraphics.PreferredBackBufferHeight = Configurations.Instance.Current.Graphics.StartupWindowHeight;
-            Terraria.MainGraphics.ApplyChanges();
 
             // Prepare the UI manager..
             Detox.GuiManager = new Manager(Terraria.MainGame, Terraria.MainGraphics, Configurations.Instance.Current.Graphics.Skin);
