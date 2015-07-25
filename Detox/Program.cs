@@ -53,23 +53,31 @@ namespace Detox
             // Store the base path to Detox..
             Detox.DetoxBasePath = AppDomain.CurrentDomain.BaseDirectory;
 
-            Logging.Instance.Log("[Detox] Detox started at: " + DateTime.Now);
+            bool runArg = args.Contains("-run");
 
-            Logging.Instance.Log("[Detox:Config] Showing configuration window");
-
-            Configurations.Instance.LoadConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detox.config.json"));
-            if (!Configurations.Instance.Current.SkipConfig)
+            if (!runArg)
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new frmConfig());
+                Logging.Instance.Log("[Detox:Config] Showing configuration window");
 
-                if (!RunDetox)
+                Configurations.Instance.LoadConfig(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detox.config.json"));
+                if (!Configurations.Instance.Current.SkipConfig)
                 {
-                    Logging.Instance.Log("[Detox:Config] Detox exited after configuration at: " + DateTime.Now);
-                    return;
+                    Application.EnableVisualStyles();
+                    Application.SetCompatibleTextRenderingDefault(false);
+                    Application.Run(new frmConfig());
+
+                    if (!RunDetox)
+                    {
+                        Logging.Instance.Log("[Detox:Config] Detox exited after configuration at: " + DateTime.Now);
+                        return;
+                    }
                 }
+
+                Process.Start(Assembly.GetExecutingAssembly().Location, "-run");
+                return;
             }
+
+            Logging.Instance.Log("[Detox] Detox started at: " + DateTime.Now);
 
             try
             {
